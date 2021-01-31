@@ -1,40 +1,58 @@
-import pygame
+import sys, pygame
 from pygame.locals import *
+import engine as eng
+from constants import *
 
-pygame.init()
-screenWidth = 450
-screenHeight = 450
-game_screen = pygame.display.set_mode((screenWidth,screenHeight))
-background = pygame.Surface(game_screen.get_size())
-background = background.convert()
-background.fill((250, 250, 250))
-vertical_points = [(50,0), (50, screenHeight)]
-horizontal_points = [(0, 50), (screenWidth, 50)]
-i = 0
-while i < 7:
-    first_Veritcal_tuple = (vertical_points[-2][0] + 50, vertical_points[-2][1])
-    second_Veritcal_tuple = (vertical_points[-1][0] + 50, vertical_points[-1][1])
-    first_Horizontal_tuple = (horizontal_points[-2][0], horizontal_points[-2][1] + 50)
-    second_Horizontal_tuple = (horizontal_points[-1][0], horizontal_points[-1][1] + 50)
-    vertical_points.append(first_Veritcal_tuple)
-    vertical_points.append(second_Veritcal_tuple)
-    horizontal_points.append(first_Horizontal_tuple)
-    horizontal_points.append(second_Horizontal_tuple)
-    i += 1
-#rect = pygame.draw.lines(game_screen, (0,0,0), False, points)
 
-#game_screen.blit(background, rect)
-
-# Event loop
-while 1:
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            break
-
-    game_screen.blit(background, (0, 0))
+def drawLines(surface):
+    vertical_points = [(HORIZONAL_OFFSET,0), (HORIZONAL_OFFSET, BOARD_HEIGHT)]
+    horizontal_points = [(HORIZONAL_OFFSET, 0), (BOARD_WIDTH+HORIZONAL_OFFSET, 0)]
+    i = 0
+    while i < 9:
+        first_Vertical_tuple = (vertical_points[-2][0] + 50, vertical_points[-2][1])
+        second_Vertical_tuple = (vertical_points[-1][0] + 50, vertical_points[-1][1])
+        first_Horizontal_tuple = (horizontal_points[-2][0], horizontal_points[-2][1] + 50)
+        second_Horizontal_tuple = (horizontal_points[-1][0], horizontal_points[-1][1] + 50)
+        vertical_points.append(first_Vertical_tuple)
+        vertical_points.append(second_Vertical_tuple)
+        horizontal_points.append(first_Horizontal_tuple)
+        horizontal_points.append(second_Horizontal_tuple)
+        i += 1
     j = 0
     while j < len(vertical_points) and j < len(horizontal_points):
-        pygame.draw.line(game_screen, (0,0,0), vertical_points[j], vertical_points[j+1])
-        pygame.draw.line(game_screen, (0,0,0), horizontal_points[j], horizontal_points[j+1])
+        if j % 3 == 0:
+            lineWidth = 2
+        else:
+            lineWidth = 1
+        pygame.draw.line(surface, (0,0,0), vertical_points[j], vertical_points[j+1], lineWidth)
+        pygame.draw.line(surface, (0,0,0), horizontal_points[j], horizontal_points[j+1], lineWidth)
         j += 2
-    pygame.display.flip()
+
+
+def main():
+    pygame.init()
+
+    game_screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
+    boardBackground = pygame.Surface((450,450))
+    boardBackground.fill(WHITE)
+
+#TODO: change this into function to convert board
+    global font
+    font = pygame.font.Font(None,56)
+    number = font.render("1", 1, (0,0,0))
+
+    # Event loop
+    while 1:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                sys.exit()
+
+        game_screen.fill(GREY)
+        game_screen.blit(boardBackground, (HORIZONAL_OFFSET, 0))
+        drawLines(game_screen)
+        game_screen.blit(number,(50,50))
+        pygame.display.flip()
+
+
+if __name__ == "__main__":
+    main()
